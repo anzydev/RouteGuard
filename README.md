@@ -4,7 +4,7 @@
 
 ### AI-Powered Supply Chain Disruption Simulator & Decision Engine
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-RouteGuard-7c3aed?style=for-the-badge)](https://route-guard.vercel.app)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-RouteGuard-7c3aed?style=for-the-badge)](https://route-guard-kappa.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
 [![Zustand](https://img.shields.io/badge/Zustand-State_Mgmt-orange?style=flat-square)](https://zustand-demo.pmnd.rs/)
 [![Leaflet](https://img.shields.io/badge/Leaflet-Maps-199900?style=flat-square&logo=leaflet)](https://leafletjs.com)
