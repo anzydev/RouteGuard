@@ -77,7 +77,12 @@ export default function MetricsBar() {
   }, [tickCount, metrics.avgRisk]);
 
   return (
-    <div className={styles.metrics}>
+    <div
+      className={styles.metrics}
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onDoubleClick={(e) => e.stopPropagation()}
+    >
       {/* On-Time */}
       <div className={styles.metrics__item}>
         <AnimatedValue

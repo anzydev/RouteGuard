@@ -3,17 +3,18 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 999;
-  background: rgba(30, 28, 35, 0.88);
+  z-index: 1001;
+  background: rgba(15, 13, 21, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(208, 188, 255, 0.08);
   padding: var(--space-3) var(--space-6);
   display: flex;
   align-items: center;
   gap: var(--space-6);
   color: white;
   font-family: var(--font-family);
+  pointer-events: auto;
   animation: slideUp 500ms var(--ease-md3) 800ms both;
 }
 
