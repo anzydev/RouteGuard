@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
-import TopBar from '@/components/TopBar/TopBar';
+
 import LeftSidebar from '@/components/LeftSidebar/LeftSidebar';
 import RightPanel from '@/components/RightPanel/RightPanel';
 import ToastContainer, { showToast } from '@/components/Toast/Toast';
@@ -198,9 +198,6 @@ export default function Dashboard() {
       {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <ToastContainer />
       <div className="dashboard">
-        <div className="dashboard__topbar">
-          <TopBar />
-        </div>
         <div className="dashboard__sidebar">
           <LeftSidebar />
         </div>
