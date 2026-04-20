@@ -204,14 +204,14 @@ export default function Dashboard() {
         <div className="dashboard__sidebar">
           <LeftSidebar />
         </div>
-        <div className="dashboard__map" style={{ position: 'relative' }}>
+        <div className="dashboard__map">
           <MapArea />
-          <MetricsBar />
         </div>
         <div className="dashboard__rightpanel">
           <RightPanel />
         </div>
       </div>
+      <MetricsBar />
     </>
   );
 }
