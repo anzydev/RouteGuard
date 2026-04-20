@@ -1,0 +1,164 @@
+.sidebar {
+  background: var(--md-surface-container);
+  border-right: 1px solid var(--md-outline-variant);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar__blur {
+  position: absolute;
+  bottom: -40px;
+  left: -30px;
+  width: 180px;
+  height: 180px;
+  background: rgba(103, 80, 164, 0.06);
+  border-radius: 100px;
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sidebar__header {
+  padding: var(--space-5) var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--md-outline-variant);
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar__title {
+  font-size: var(--font-title-large);
+  font-weight: 500;
+  color: var(--md-on-surface);
+  margin-bottom: var(--space-1);
+}
+
+.sidebar__count {
+  font-size: var(--font-label-small);
+  color: var(--md-on-surface-variant);
+}
+
+.sidebar__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Shipment Card ── */
+.shipcard {
+  background: var(--md-background);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  cursor: pointer;
+  transition: all 300ms var(--ease-md3);
+  box-shadow: var(--shadow-sm);
+  border: 2px solid transparent;
+  animation: fadeIn 400ms var(--ease-md3) both;
+}
+
+.shipcard:hover {
+  box-shadow: var(--shadow-md);
+  transform: scale(1.02);
+}
+
+.shipcard:active {
+  transform: scale(0.98);
+}
+
+.shipcard_selected {
+  border-color: var(--md-primary);
+  background: var(--md-primary-container);
+}
+
+.shipcard__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.shipcard__id {
+  font-size: var(--font-label-medium);
+  font-weight: 700;
+  color: var(--md-on-surface);
+}
+
+.shipcard__route {
+  font-size: var(--font-label-small);
+  color: var(--md-on-surface-variant);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.shipcard__arrow {
+  color: var(--md-primary);
+  font-weight: 700;
+}
+
+.shipcard__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-label-small);
+  color: var(--md-on-surface-variant);
+}
+
+.shipcard__cargo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.shipcard__risk {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.shipcard__risk_label {
+  font-size: var(--font-label-small);
+  color: var(--md-on-surface-variant);
+  min-width: 30px;
+  font-weight: 500;
+}
+
+.shipcard__priority {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--md-surface-container-low);
+  color: var(--md-on-surface-variant);
+}
+
+.shipcard__priority_high {
+  background: rgba(255, 152, 0, 0.12);
+  color: #E65100;
+}
+
+.shipcard__priority_critical {
+  background: rgba(244, 67, 54, 0.12);
+  color: var(--risk-danger);
+}
+
+/* Staggered animation for cards */
+.shipcard:nth-child(1) { animation-delay: 0ms; }
+.shipcard:nth-child(2) { animation-delay: 50ms; }
+.shipcard:nth-child(3) { animation-delay: 100ms; }
+.shipcard:nth-child(4) { animation-delay: 150ms; }
+.shipcard:nth-child(5) { animation-delay: 200ms; }
+.shipcard:nth-child(6) { animation-delay: 250ms; }
+.shipcard:nth-child(7) { animation-delay: 300ms; }
+.shipcard:nth-child(8) { animation-delay: 350ms; }

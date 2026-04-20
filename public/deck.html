@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Chain Disruption Simulator — Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a14;
+    --surface: #141219;
+    --surface-hi: #1e1b26;
+    --primary: #D0BCFF;
+    --primary-dim: #4F378B;
+    --on-surface: #E6E1E5;
+    --muted: #938F99;
+    --accent-green: #66BB6A;
+    --accent-red: #EF5350;
+    --accent-orange: #FFA726;
+    --radius: 24px;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--on-surface);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Slide Container ── */
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide__inner {
+    max-width: 1200px;
+    width: 100%;
+    z-index: 1;
+  }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(208, 188, 255, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: all 300ms ease;
+  }
+
+  .nav__dot:hover, .nav__dot.active {
+    background: var(--primary);
+    box-shadow: 0 0 12px rgba(208, 188, 255, 0.4);
+    transform: scale(1.3);
+  }
+
+  /* ── Background Effects ── */
+  .bg-gradient {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(208,188,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(208,188,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* ── Typography ── */
+  .display { font-size: 4.5rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; }
+  .headline { font-size: 2.8rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+  .title { font-size: 1.8rem; font-weight: 600; line-height: 1.3; }
+  .body { font-size: 1.1rem; line-height: 1.7; color: var(--muted); }
+  .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--primary); }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #D0BCFF, #6750A4, #CE93D8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid rgba(208,188,255,0.06);
+    border-radius: var(--radius);
+    padding: 32px;
+    transition: all 400ms cubic-bezier(0.2,0,0,1);
+  }
+
+  .card:hover {
+    border-color: rgba(208,188,255,0.15);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    transform: translateY(-4px);
+  }
+
+  .card__icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .card__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .card__desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── Grids ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+
+  /* ── Stats ── */
+  .stat {
+    text-align: center;
+    padding: 24px;
+  }
+
+  .stat__value {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .stat__label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Pill ── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--primary-dim);
+    color: var(--primary);
+    margin-bottom: 16px;
+  }
+
+  /* ── Tech Stack ── */
+  .tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid rgba(208,188,255,0.08);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--on-surface);
+  }
+
+  .tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-left: 24px;
+    border-left: 2px solid rgba(208,188,255,0.1);
+  }
+
+  .timeline__item {
+    padding-left: 24px;
+    position: relative;
+  }
+
+  .timeline__item::before {
+    content: '';
+    position: absolute;
+    left: -29px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 12px rgba(208,188,255,0.3);
+  }
+
+  .timeline__title {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .timeline__desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── Flow Diagram ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .flow__node {
+    padding: 12px 20px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid rgba(208,188,255,0.1);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .flow__arrow {
+    color: var(--primary);
+    font-size: 1.2rem;
+    opacity: 0.5;
+  }
+
+  /* ── Misc ── */
+  .spacer-sm { height: 24px; }
+  .spacer-md { height: 40px; }
+  .spacer-lg { height: 60px; }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(208,188,255,0.15), transparent);
+    margin: 20px 0;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 300ms ease;
+    text-decoration: none;
+  }
+
+  .cta-btn:hover {
+    box-shadow: 0 0 30px rgba(208,188,255,0.4);
+    transform: scale(1.03);
+  }
+
+  .slide-number {
+    position: absolute;
+    bottom: 24px;
+    right: 40px;
+    font-size: 0.7rem;
+    color: rgba(208,188,255,0.15);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Animations ── */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+  }
+
+  @media (max-width: 900px) {
+    .slide { padding: 40px 24px; }
+    .display { font-size: 2.8rem; }
+    .headline { font-size: 2rem; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Dots -->
+<nav class="nav">
+  <button class="nav__dot active" onclick="goSlide(0)"></button>
+  <button class="nav__dot" onclick="goSlide(1)"></button>
+  <button class="nav__dot" onclick="goSlide(2)"></button>
+  <button class="nav__dot" onclick="goSlide(3)"></button>
+  <button class="nav__dot" onclick="goSlide(4)"></button>
+  <button class="nav__dot" onclick="goSlide(5)"></button>
+  <button class="nav__dot" onclick="goSlide(6)"></button>
+  <button class="nav__dot" onclick="goSlide(7)"></button>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s0">
+  <div class="bg-gradient" style="width:500px;height:500px;top:-200px;left:-100px;background:radial-gradient(circle,rgba(103,80,164,0.15),transparent)"></div>
+  <div class="bg-gradient" style="width:400px;height:400px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(125,82,96,0.1),transparent);animation:pulse-glow 4s ease infinite"></div>
+  <div class="bg-grid"></div>
+
+  <div class="slide__inner" style="text-align:center;">
+    <div class="pill">⚡ Hackathon Project</div>
+    <h1 class="display">
+      AI-Powered<br>
+      <span class="gradient-text">Supply Chain</span><br>
+      Disruption Simulator
+    </h1>
+    <div class="spacer-md"></div>
+    <p class="body" style="max-width:600px;margin:0 auto;">
+      A real-time interactive dashboard that simulates supply chain disruptions,
+      detects cascade risks, and recommends AI-powered decisions — rerouting,
+      delaying, or splitting shipments.
+    </p>
+    <div class="spacer-lg"></div>
+    <a href="http://localhost:3000" class="cta-btn">🚀 Launch Live Demo</a>
+  </div>
+  <span class="slide-number">01 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 2 — THE PROBLEM
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s1">
+  <div class="bg-gradient" style="width:400px;height:400px;top:50%;left:-100px;background:radial-gradient(circle,rgba(239,83,80,0.08),transparent)"></div>
+
+  <div class="slide__inner">
+    <div class="grid-2" style="align-items:center;">
+      <div>
+        <div class="pill">🔴 The Problem</div>
+        <h2 class="headline">Supply chain disruptions cost <span class="gradient-text">$4.2T annually</span></h2>
+        <div class="spacer-sm"></div>
+        <p class="body">
+          Weather events, traffic congestion, and roadblocks cause cascading failures
+          across global supply networks. Logistics teams lack real-time visibility and
+          rely on manual, reactive decision-making — leading to delays, spoiled cargo,
+          and massive financial losses.
+        </p>
+      </div>
+      <div class="grid-2" style="gap:16px;">
+        <div class="card">
+          <span class="stat__value" style="color:var(--accent-red);">73%</span>
+          <span class="stat__label">of companies faced supply disruptions in 2024</span>
+        </div>
+        <div class="card">
+          <span class="stat__value" style="color:var(--accent-orange);">45min</span>
+          <span class="stat__label">avg delay per disruption event</span>
+        </div>
+        <div class="card">
+          <span class="stat__value" style="color:var(--accent-red);">₹2.5L</span>
+          <span class="stat__label">avg cost per delayed shipment</span>
+        </div>
+        <div class="card">
+          <span class="stat__value" style="color:var(--accent-orange);">6hrs</span>
+          <span class="stat__label">manual response time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">02 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 3 — OUR SOLUTION
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s2">
+  <div class="bg-gradient" style="width:500px;height:500px;top:-100px;right:-200px;background:radial-gradient(circle,rgba(103,80,164,0.1),transparent)"></div>
+
+  <div class="slide__inner">
+    <div class="pill">💡 Our Solution</div>
+    <h2 class="headline">An <span class="gradient-text">AI Decision Engine</span><br>for supply chain resilience</h2>
+    <div class="spacer-md"></div>
+
+    <div class="grid-3">
+      <div class="card">
+        <span class="card__icon">🗺️</span>
+        <div class="card__title">Real-Time Map Simulation</div>
+        <div class="card__desc">
+          Interactive dark-themed Leaflet map with live truck markers, animated route polylines,
+          and click-to-place disruption zones covering Indian logistics corridors.
+        </div>
+      </div>
+      <div class="card">
+        <span class="card__icon">🧠</span>
+        <div class="card__title">AI-Powered Decisions</div>
+        <div class="card__desc">
+          Automated recommendations — reroute via Dijkstra pathfinding, delay shipments,
+          or split cargo — with confidence scores and cost/time impact analysis.
+        </div>
+      </div>
+      <div class="card">
+        <span class="card__icon">⚡</span>
+        <div class="card__title">Cascade Risk Detection</div>
+        <div class="card__desc">
+          Graph-based risk propagation that simulates how one disruption cascades through
+          interconnected supply chain nodes with iterative decay modeling.
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">03 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 4 — HOW IT WORKS
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s3">
+  <div class="bg-grid"></div>
+
+  <div class="slide__inner">
+    <div class="pill">⚙️ Architecture</div>
+    <h2 class="headline">How it <span class="gradient-text">works</span></h2>
+    <div class="spacer-md"></div>
+
+    <div class="flow">
+      <div class="flow__node">🚛 Shipment Data<br><small style="color:var(--muted)">8 routes, Indian cities</small></div>
+      <span class="flow__arrow">→</span>
+      <div class="flow__node">🌧️ Disruption Events<br><small style="color:var(--muted)">Weather, Traffic, Roadblocks</small></div>
+      <span class="flow__arrow">→</span>
+      <div class="flow__node">📊 Risk Engine<br><small style="color:var(--muted)">Weighted multi-factor scoring</small></div>
+      <span class="flow__arrow">→</span>
+      <div class="flow__node">🔗 Cascade Engine<br><small style="color:var(--muted)">Graph-based propagation</small></div>
+      <span class="flow__arrow">→</span>
+      <div class="flow__node" style="background:var(--primary-dim);border-color:var(--primary)">🧠 AI Decisions<br><small style="color:var(--primary)">Reroute · Delay · Split</small></div>
+    </div>
+
+    <div class="spacer-lg"></div>
+
+    <div class="grid-4">
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
+        <div class="card__title" style="font-size:0.9rem;">Haversine Distance</div>
+        <div class="card__desc" style="font-size:0.8rem;">Proximity detection for disruption zones</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:8px;">🔀</div>
+        <div class="card__title" style="font-size:0.9rem;">Dijkstra Pathfinding</div>
+        <div class="card__desc" style="font-size:0.8rem;">Optimal rerouting through graph network</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:8px;">📈</div>
+        <div class="card__title" style="font-size:0.9rem;">Weighted Risk Model</div>
+        <div class="card__desc" style="font-size:0.8rem;">Weather × Traffic × History × Speed</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:8px;">🔔</div>
+        <div class="card__title" style="font-size:0.9rem;">Real-Time Alerts</div>
+        <div class="card__desc" style="font-size:0.8rem;">Toast + sound effects on risk changes</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">04 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 5 — KEY FEATURES
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s4">
+  <div class="bg-gradient" style="width:400px;height:400px;bottom:-150px;left:-100px;background:radial-gradient(circle,rgba(102,187,106,0.08),transparent)"></div>
+
+  <div class="slide__inner">
+    <div class="pill">✨ Key Features</div>
+    <h2 class="headline">Everything a logistics team <span class="gradient-text">needs</span></h2>
+    <div class="spacer-md"></div>
+
+    <div class="grid-2">
+      <div class="timeline">
+        <div class="timeline__item">
+          <div class="timeline__title">🗺️ Interactive Dark Map</div>
+          <div class="timeline__desc">CartoDB dark tiles with animated truck markers, click-to-place disruption zones, and fly-to-selected navigation</div>
+        </div>
+        <div class="timeline__item">
+          <div class="timeline__title">📊 Live Metrics Dashboard</div>
+          <div class="timeline__desc">Animated counter bar showing on-time, at-risk, delayed, cost impact, delay estimates, and risk sparkline — all in real time</div>
+        </div>
+        <div class="timeline__item">
+          <div class="timeline__title">🔊 Immersive Sound Effects</div>
+          <div class="timeline__desc">Web Audio API synthesized tones for clicks, alerts, warnings, and critical events — no external audio files needed</div>
+        </div>
+        <div class="timeline__item">
+          <div class="timeline__title">⚗️ What-If Sandbox Mode</div>
+          <div class="timeline__desc">Toggle sandbox mode to experiment with disruption scenarios without affecting the live simulation state</div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline__item">
+          <div class="timeline__title">🎛️ Disruption Controls</div>
+          <div class="timeline__desc">Global weather slider, traffic level buttons, and point-and-click disruption placement with toggle/remove controls</div>
+        </div>
+        <div class="timeline__item">
+          <div class="timeline__title">🔔 Toast Notifications</div>
+          <div class="timeline__desc">Glass-morphism slide-in toasts with severity colors, auto-dismiss timer bars, and click-to-dismiss interaction</div>
+        </div>
+        <div class="timeline__item">
+          <div class="timeline__title">🧠 AI Decision Cards</div>
+          <div class="timeline__desc">Reroute/Delay/Split recommendations with confidence %, cost/delay impact metrics, and one-click Apply action</div>
+        </div>
+        <div class="timeline__item">
+          <div class="timeline__title">🌐 Cinematic Splash Screen</div>
+          <div class="timeline__desc">Animated wireframe globe with city dots, mesh gradients, floating particles, and shimmer loading bar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">05 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 6 — TECH STACK
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s5">
+  <div class="bg-grid"></div>
+
+  <div class="slide__inner" style="text-align:center;">
+    <div class="pill">🛠️ Tech Stack</div>
+    <h2 class="headline">Built with <span class="gradient-text">modern tools</span></h2>
+    <div class="spacer-md"></div>
+
+    <div class="grid-3" style="max-width:900px;margin:0 auto;">
+      <div class="card" style="text-align:center;">
+        <span class="card__icon">⚛️</span>
+        <div class="card__title">Next.js 16</div>
+        <div class="card__desc">App Router, Turbopack, SSR-safe dynamic imports</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="card__icon">🐻</span>
+        <div class="card__title">Zustand</div>
+        <div class="card__desc">4 stores — simulation, shipments, disruptions, alerts</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="card__icon">🗺️</span>
+        <div class="card__title">React Leaflet</div>
+        <div class="card__desc">CartoDB dark tiles, markers, polylines, circle zones</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="card__icon">🎨</span>
+        <div class="card__title">Material You (MD3)</div>
+        <div class="card__desc">Custom dark theme tokens, CSS Modules, glass-morphism</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="card__icon">🔊</span>
+        <div class="card__title">Web Audio API</div>
+        <div class="card__desc">Synthesized UI sounds — no external audio files</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <span class="card__icon">🧪</span>
+        <div class="card__title">Canvas 2D</div>
+        <div class="card__desc">Animated wireframe globe in splash screen</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">06 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 7 — IMPACT
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s6">
+  <div class="bg-gradient" style="width:500px;height:500px;top:-200px;right:-200px;background:radial-gradient(circle,rgba(102,187,106,0.1),transparent)"></div>
+
+  <div class="slide__inner" style="text-align:center;">
+    <div class="pill">📈 Projected Impact</div>
+    <h2 class="headline">Real-world <span class="gradient-text">value delivery</span></h2>
+    <div class="spacer-md"></div>
+
+    <div class="grid-4" style="max-width:1000px;margin:0 auto;">
+      <div class="card stat">
+        <span class="stat__value" style="color:var(--accent-green);">40%</span>
+        <span class="stat__label">Reduction in response time</span>
+      </div>
+      <div class="card stat">
+        <span class="stat__value" style="color:var(--accent-green);">₹18L</span>
+        <span class="stat__label">Estimated annual savings</span>
+      </div>
+      <div class="card stat">
+        <span class="stat__value" style="color:var(--accent-green);">85%</span>
+        <span class="stat__label">AI recommendation accuracy</span>
+      </div>
+      <div class="card stat">
+        <span class="stat__value" style="color:var(--accent-green);">3x</span>
+        <span class="stat__label">Faster disruption recovery</span>
+      </div>
+    </div>
+
+    <div class="spacer-lg"></div>
+    <div class="divider"></div>
+    <div class="spacer-md"></div>
+
+    <h3 class="title" style="font-size:1.3rem;">Future Roadmap</h3>
+    <div class="spacer-sm"></div>
+    <div class="tech-grid" style="justify-content:center;">
+      <span class="tech-badge">📡 Real-time weather API integration</span>
+      <span class="tech-badge">🤖 ML-based risk prediction</span>
+      <span class="tech-badge">📱 Mobile companion app</span>
+      <span class="tech-badge">🔗 ERP/WMS integration</span>
+      <span class="tech-badge">🌍 Multi-country support</span>
+    </div>
+  </div>
+  <span class="slide-number">07 / 08</span>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SLIDE 8 — CTA / THANK YOU
+     ════════════════════════════════════════════════════════════════ -->
+<section class="slide" id="s7">
+  <div class="bg-gradient" style="width:600px;height:600px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(103,80,164,0.12),transparent);animation:pulse-glow 3s ease infinite"></div>
+  <div class="bg-grid"></div>
+
+  <div class="slide__inner" style="text-align:center;">
+    <h2 class="display">
+      <span class="gradient-text">Thank You</span>
+    </h2>
+    <div class="spacer-md"></div>
+    <p class="body" style="max-width:500px;margin:0 auto;font-size:1.2rem;">
+      We'd love to show you a live demo.
+    </p>
+    <div class="spacer-lg"></div>
+    <a href="http://localhost:3000" class="cta-btn" style="font-size:1.1rem;padding:16px 40px;">
+      🚀 Launch Live Demo
+    </a>
+    <div class="spacer-lg"></div>
+    <p style="color:var(--muted);font-size:0.85rem;">
+      Built with ❤️ using Next.js · Zustand · React Leaflet · Web Audio API<br>
+      Material You (MD3) Dark Theme · Canvas 2D Globe
+    </p>
+  </div>
+  <span class="slide-number">08 / 08</span>
+</section>
+
+<script>
+  // Simple slide navigation
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav__dot');
+
+  function goSlide(i) {
+    slides[i].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Update active dot on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(slides).indexOf(entry.target);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    const current = Array.from(slides).findIndex(s => {
+      const rect = s.getBoundingClientRect();
+      return rect.top >= -100 && rect.top <= window.innerHeight / 2;
+    });
+    if (e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      if (current < slides.length - 1) goSlide(current + 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (current > 0) goSlide(current - 1);
+    }
+  });
+</script>
+
+</body>
+</html>
