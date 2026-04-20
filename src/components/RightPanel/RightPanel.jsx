@@ -5,6 +5,7 @@ import styles from './RightPanel.module.css';
 import useDisruptionStore from '@/stores/useDisruptionStore';
 import useAlertStore from '@/stores/useAlertStore';
 import useShipmentStore from '@/stores/useShipmentStore';
+import useSimulationStore from '@/stores/useSimulationStore';
 import { generateDecisions } from '@/engines/decisionEngine';
 import { generateAlternativeRoute } from '@/engines/routeOptimizer';
 import { timeAgo } from '@/utils/formatters';
@@ -74,8 +75,73 @@ function ControlsTab() {
   const removeDisruption = useDisruptionStore((s) => s.removeDisruption);
   const toggleDisruption = useDisruptionStore((s) => s.toggleDisruption);
 
+  // Simulation controls
+  const { isRunning, toggle, speedMultiplier, setSpeedMultiplier, whatIfMode, toggleWhatIfMode, reset: resetSim } = useSimulationStore();
+  const resetShipments = useShipmentStore((s) => s.resetShipments);
+  const clearDisruptions = useDisruptionStore((s) => s.clearAllDisruptions);
+  const clearAlerts = useAlertStore((s) => s.clearAlerts);
+
+  const handleToggle = () => {
+    if (isRunning) { playClick(); } else { playSuccess(); }
+    toggle();
+  };
+
+  const handleReset = () => {
+    playClick();
+    resetSim();
+    resetShipments();
+    clearDisruptions();
+    clearAlerts();
+  };
+
   return (
     <div>
+      {/* ── Simulation Controls ── */}
+      <div className={styles.controls__section}>
+        <div className={styles.controls__label}>🚀 Simulation</div>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+          <button
+            className={`btn ${isRunning ? 'btn--danger' : 'btn--primary'}`}
+            style={{ flex: 1, height: '44px', fontSize: '14px', fontWeight: 700 }}
+            onClick={handleToggle}
+          >
+            {isRunning ? '⏸ Pause Simulation' : '▶ Run Simulation'}
+          </button>
+          <button
+            className="btn btn--outlined"
+            style={{ height: '44px' }}
+            onClick={handleReset}
+          >
+            ↻
+          </button>
+        </div>
+
+        {/* Speed */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+          <span style={{ fontSize: '12px', color: 'var(--md-on-surface-variant)', minWidth: '40px' }}>Speed</span>
+          {[1, 2, 5].map((speed) => (
+            <button
+              key={speed}
+              className={`btn btn--sm ${speedMultiplier === speed ? 'btn--primary' : 'btn--tonal'}`}
+              onClick={() => { playClick(); setSpeedMultiplier(speed); }}
+            >
+              {speed}x
+            </button>
+          ))}
+        </div>
+
+        {/* What-If */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '12px', color: 'var(--md-on-surface-variant)' }}>
+            {whatIfMode ? '⚗️ What-If Mode Active' : 'What-If Mode'}
+          </span>
+          <button
+            className={`toggle ${whatIfMode ? 'toggle--active' : ''}`}
+            onClick={() => { playClick(); toggleWhatIfMode(); }}
+            aria-label="Toggle what-if mode"
+          />
+        </div>
+      </div>
       {/* Weather Control */}
       <div className={styles.controls__section}>
         <div className={styles.controls__label}>🌧️ Weather Intensity</div>
