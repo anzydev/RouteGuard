@@ -1,23 +1,44 @@
 /**
  * Shared data query helpers.
  */
-import {
-  type Hub,
-  type Lane,
-  type ShipmentRow,
-  type DisruptionRow,
-  type ScoreboardRow,
-} from "@workspace/db";
+import type {
+  Hub,
+  Lane,
+  ShipmentRow,
+  DisruptionRow,
+  ScoreboardRow,
+  FeedEventRow,
+} from "./state";
 import { buildScoringContext, scoreShipment, interpolatePosition } from "./risk";
 import { generateRecommendations } from "./recommendations";
-import { setRecommendations } from "./state";
 import {
-  listDisruptions,
   listHubs,
   listLanes,
   listShipments,
+  listDisruptions,
+  listFeedEvents,
   getScoreboard,
-} from "./data-store";
+} from "./state";
+
+// Port RouteRecommendation here to decouple
+export interface RouteRecommendation {
+  id: string;
+  viaHubIds: string[];
+  etaDeltaHours: number;
+  costDeltaUsd: number;
+  riskAfter: number;
+}
+
+// In-memory cache for recommendations since we don't use DB
+let recommendationsCache: Record<string, RouteRecommendation[]> = {};
+
+export function setRecommendations(shipmentId: string, recs: RouteRecommendation[]) {
+  recommendationsCache[shipmentId] = recs;
+}
+
+export function clearRecommendations() {
+  recommendationsCache = {};
+}
 
 export interface NetworkSnapshot {
   hubs: Hub[];

@@ -1,23 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/transit run build",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "artifacts/transit/dist/public",
-  "env": {
-    "TRANSIT_STORAGE": "memory",
-    "SESSION_SECRET": "vercel-transit-session-secret"
-  },
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 60,
-      "includeFiles": "artifacts/api-server/dist/**"
-    }
-  },
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
-

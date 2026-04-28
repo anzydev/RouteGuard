@@ -360,6 +360,24 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
+  // MOCK BACKEND INTERCEPTOR
+  const globalObj = typeof window !== "undefined" ? window : globalThis;
+  if ((globalObj as any).__mockRouter && requestInfo.url.includes("/api/")) {
+    try {
+      let parsedBody = init.body;
+      if (typeof init.body === "string" && looksLikeJson(init.body)) {
+        parsedBody = JSON.parse(init.body);
+      }
+      // Give a tiny synthetic delay to simulate network latency realistically
+      await new Promise(r => setTimeout(r, 200 + Math.random() * 300));
+      const data = await (globalObj as any).__mockRouter(method, requestInfo.url, parsedBody);
+      return data as T;
+    } catch (err: any) {
+      console.error("Mock Router Error:", err);
+      throw new Error(err.message || "API Error");
+    }
+  }
+
   const response = await fetch(input, { ...init, method, headers });
 
   if (!response.ok) {

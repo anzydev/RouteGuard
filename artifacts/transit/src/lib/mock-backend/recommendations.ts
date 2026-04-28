@@ -2,14 +2,19 @@
  * Generate alternative routes for a shipment under current network state.
  */
 
-import type { Hub, Lane, ShipmentRow, DisruptionRow } from "@workspace/db";
+import type { Hub, Lane, ShipmentRow, DisruptionRow } from "./state";
 import {
   buildAdjacency,
   kShortestPaths,
   type RiskAdjustments,
 } from "./network";
-import { randomUUID } from "node:crypto";
 import type { RouteRecommendation } from "./state";
+
+function browserUUID() {
+  return typeof crypto !== 'undefined' && crypto.randomUUID 
+    ? crypto.randomUUID() 
+    : Math.random().toString(36).substring(2, 15);
+}
 
 const SEVERITY_WEIGHT: Record<string, number> = {
   low: 1.2,
@@ -127,7 +132,7 @@ export function generateRecommendations(
     );
 
     recs.push({
-      id: `r_${randomUUID().slice(0, 10)}`,
+      id: `r_${browserUUID().slice(0, 10)}`,
       shipmentId: shipment.id,
       label,
       viaHubIds,

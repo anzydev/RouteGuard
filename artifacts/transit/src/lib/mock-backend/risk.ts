@@ -2,7 +2,7 @@
  * Risk scoring + status derivation for shipments.
  */
 
-import type { ShipmentRow, DisruptionRow, Hub, Lane } from "@workspace/db";
+import type { ShipmentRow, DisruptionRow, Hub, Lane } from "./state";
 
 export type Status = "on_track" | "at_risk" | "delayed" | "rerouted" | "delivered";
 
