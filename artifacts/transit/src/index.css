@@ -1,0 +1,283 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800;900&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: hsl(var(--primary-border));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: hsl(var(--secondary-border));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: hsl(var(--muted-border));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: hsl(var(--accent-border));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: hsl(var(--destructive-border));
+
+  --color-surface: hsl(var(--surface));
+  --color-surface-2: hsl(var(--surface-2));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+  --font-display: var(--app-font-display);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* =====================================================================
+   DARK THEME — "Midnight Ops"
+   Richer than pitch-black: deep navy base, slate cards, neon accents.
+   ===================================================================== */
+:root,
+.dark {
+  --background: 222 38% 8%;       /* deep midnight navy */
+  --foreground: 210 25% 96%;
+
+  --surface:   222 32% 11%;       /* page chrome */
+  --surface-2: 222 28% 14%;       /* card surface */
+
+  --border: 220 22% 26%;
+  --input:  222 28% 16%;
+  --ring:   65 100% 55%;
+
+  --card: 222 28% 13%;
+  --card-foreground: 210 25% 96%;
+  --card-border: 220 22% 26%;
+
+  --popover: 222 30% 12%;
+  --popover-foreground: 210 25% 96%;
+  --popover-border: 220 22% 26%;
+
+  /* Neon Lime (signature primary) */
+  --primary: 70 100% 58%;
+  --primary-foreground: 222 40% 8%;
+  --primary-border: 70 100% 45%;
+
+  --secondary: 222 25% 18%;
+  --secondary-foreground: 210 25% 96%;
+  --secondary-border: 220 22% 28%;
+
+  --muted: 222 25% 16%;
+  --muted-foreground: 220 15% 70%;
+  --muted-border: 220 22% 24%;
+
+  /* Hot Violet */
+  --accent: 285 95% 68%;
+  --accent-foreground: 222 40% 8%;
+  --accent-border: 285 95% 55%;
+
+  /* Coral Red — softer than pure red, still alarming */
+  --destructive: 0 88% 62%;
+  --destructive-foreground: 0 0% 100%;
+  --destructive-border: 0 88% 50%;
+
+  --app-font-sans: 'Inter', sans-serif;
+  --app-font-serif: Georgia, serif;
+  --app-font-mono: 'Space Mono', monospace;
+  --app-font-display: 'Archivo Black', sans-serif;
+
+  --radius: 0px;
+
+  /* Hard offset shadows (neo-brutalism) */
+  --shadow-sm: 2px 2px 0px 0px hsl(var(--primary));
+  --shadow:    4px 4px 0px 0px hsl(var(--primary));
+  --shadow-md: 6px 6px 0px 0px hsl(var(--primary));
+  --shadow-lg: 8px 8px 0px 0px hsl(var(--primary));
+  --shadow-red:    4px 4px 0px 0px hsl(var(--destructive));
+  --shadow-violet: 4px 4px 0px 0px hsl(var(--accent));
+
+  --map-bg-1: #0b1326;
+  --map-bg-2: #050912;
+  --grid-line: 220 22% 18%;
+}
+
+/* =====================================================================
+   LIGHT THEME — "Daylight Ops"
+   Warm off-white base, dark borders preserved for brutalist feel.
+   `html.light` bumps specificity above `:root` so it always wins.
+   ===================================================================== */
+html.light,
+:root.light,
+.light {
+  --background: 40 30% 96%;        /* warm cream */
+  --foreground: 222 40% 10%;
+
+  --surface:   40 30% 94%;
+  --surface-2: 0 0% 100%;
+
+  --border: 222 35% 16%;
+  --input:  0 0% 100%;
+  --ring:   285 75% 45%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 40% 10%;
+  --card-border: 222 35% 16%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 40% 10%;
+  --popover-border: 222 35% 16%;
+
+  /* Lime (deeper so it reads on white) */
+  --primary: 75 75% 42%;
+  --primary-foreground: 222 40% 8%;
+  --primary-border: 75 75% 30%;
+
+  --secondary: 40 20% 88%;
+  --secondary-foreground: 222 40% 10%;
+  --secondary-border: 222 35% 16%;
+
+  --muted: 40 20% 90%;
+  --muted-foreground: 222 20% 32%;
+  --muted-border: 222 35% 16%;
+
+  /* Violet */
+  --accent: 285 78% 48%;
+  --accent-foreground: 0 0% 100%;
+  --accent-border: 285 78% 35%;
+
+  /* Red */
+  --destructive: 0 80% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --destructive-border: 0 80% 38%;
+
+  --map-bg-1: #e7e3d6;
+  --map-bg-2: #d8d3c2;
+  --grid-line: 222 25% 75%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+/* ---------- Brutalist primitives ---------- */
+.brutalist-border          { border: 2px solid hsl(var(--border)); }
+.brutalist-border-primary  { border: 2px solid hsl(var(--primary)); }
+.brutalist-border-destructive { border: 2px solid hsl(var(--destructive)); }
+
+.brutalist-card {
+  background-color: hsl(var(--card));
+  border: 2px solid hsl(var(--border));
+  box-shadow: 4px 4px 0px 0px hsl(var(--primary));
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.1s ease;
+}
+
+.brutalist-card-red {
+  background-color: hsl(var(--card));
+  border: 2px solid hsl(var(--destructive));
+  box-shadow: 4px 4px 0px 0px hsl(var(--destructive));
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.1s ease;
+}
+
+.brutalist-button {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 2px solid hsl(var(--primary-foreground));
+  box-shadow: 4px 4px 0px 0px hsl(var(--primary-foreground));
+  font-family: var(--app-font-display);
+  text-transform: uppercase;
+  transition: all 0.1s ease;
+}
+.brutalist-button:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px hsl(var(--primary-foreground));
+}
+
+.brutalist-button-red {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  border: 2px solid hsl(var(--destructive-foreground));
+  box-shadow: 4px 4px 0px 0px hsl(var(--destructive-foreground));
+  font-family: var(--app-font-display);
+  text-transform: uppercase;
+  transition: all 0.1s ease;
+}
+.brutalist-button-red:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px hsl(var(--destructive-foreground));
+}
+
+/* Subtle "panel" surface used for nested zones (e.g. inside cards) */
+.surface-2 {
+  background-color: hsl(var(--surface-2));
+  border: 2px solid hsl(var(--border));
+}
+
+/* ---------- Scrollbar (theme-aware) ---------- */
+::-webkit-scrollbar          { width: 10px; height: 10px; }
+::-webkit-scrollbar-track    { background: hsl(var(--surface)); border-left: 1px solid hsl(var(--border)); }
+::-webkit-scrollbar-thumb    { background: hsl(var(--border)); }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+
+/* ---------- Map / overlay backgrounds ---------- */
+.map-container {
+  background: var(--map-bg-2);
+  background-image:
+    radial-gradient(ellipse at center, var(--map-bg-1) 0%, var(--map-bg-2) 80%),
+    linear-gradient(hsl(var(--grid-line) / 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--grid-line) / 0.25) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-position: center, center, center;
+}
+
+.scanline {
+  width: 100%;
+  height: 100px;
+  z-index: 9999;
+  position: absolute;
+  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0%,
+    hsl(var(--primary) / 0.18) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0.18;
+  animation: scanline 8s linear infinite;
+}
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Soft glow utility for live indicators */
+.glow-primary    { box-shadow: 0 0 12px hsl(var(--primary) / 0.55); }
+.glow-destructive{ box-shadow: 0 0 12px hsl(var(--destructive) / 0.55); }

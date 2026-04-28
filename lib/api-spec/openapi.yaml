@@ -1,0 +1,813 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Transit API — global supply chain disruption control tower
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: shipments
+    description: Shipment tracking and rerouting
+  - name: network
+    description: Hubs and lanes that make up the transit network
+  - name: disruptions
+    description: Disruption events and simulation
+  - name: intel
+    description: AI-powered briefings and command mode
+  - name: dashboard
+    description: Aggregated dashboard data
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /summary:
+    get:
+      operationId: getSummary
+      tags: [dashboard]
+      summary: Aggregated KPI summary for the control tower
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /shipments:
+    get:
+      operationId: listShipments
+      tags: [shipments]
+      summary: List shipments, optionally filtered by status
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [on_track, at_risk, delayed, rerouted, delivered]
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+      responses:
+        "200":
+          description: Shipments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Shipment"
+
+  /shipments/{id}:
+    get:
+      operationId: getShipment
+      tags: [shipments]
+      summary: Shipment detail with recommended reroutes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Shipment detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShipmentDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /shipments/{id}/accept-reroute:
+    post:
+      operationId: acceptReroute
+      tags: [shipments]
+      summary: Accept a recommended reroute and apply it to the shipment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AcceptRerouteBody"
+      responses:
+        "200":
+          description: Reroute applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AcceptRerouteResult"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /hubs:
+    get:
+      operationId: listHubs
+      tags: [network]
+      summary: List all hubs (ports, airports, terminals, warehouses)
+      responses:
+        "200":
+          description: Hubs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Hub"
+
+  /lanes:
+    get:
+      operationId: listLanes
+      tags: [network]
+      summary: List all lanes between hubs
+      responses:
+        "200":
+          description: Lanes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lane"
+
+  /disruptions:
+    get:
+      operationId: listDisruptions
+      tags: [disruptions]
+      summary: List active and recent disruption events
+      responses:
+        "200":
+          description: Disruptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DisruptionEvent"
+
+  /disruptions/simulate:
+    post:
+      operationId: simulateDisruption
+      tags: [disruptions]
+      summary: Trigger a Global Chaos scenario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulateDisruptionBody"
+      responses:
+        "200":
+          description: Scenario triggered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulateDisruptionResult"
+
+  /disruptions/reset:
+    post:
+      operationId: resetDisruptions
+      tags: [disruptions]
+      summary: Clear all simulated disruptions and restore baseline
+      responses:
+        "200":
+          description: Reset complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetDisruptionsResult"
+
+  /events:
+    get:
+      operationId: listEvents
+      tags: [disruptions]
+      summary: Live newsfeed-style stream of system events
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        "200":
+          description: Events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedEvent"
+
+  /briefing:
+    post:
+      operationId: generateBriefing
+      tags: [intel]
+      summary: AI-generated executive briefing on current network state
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BriefingBody"
+      responses:
+        "200":
+          description: Briefing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Briefing"
+
+  /command:
+    post:
+      operationId: aiCommand
+      tags: [intel]
+      summary: Execute a natural-language command against the network
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommandBody"
+      responses:
+        "200":
+          description: Command result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResult"
+
+  /scoreboard/reset:
+    post:
+      operationId: resetScoreboard
+      tags: [dashboard]
+      summary: Reset the Crisis Mode score, streak, and saved-dollar counter
+      responses:
+        "200":
+          description: Reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Hub:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        type:
+          type: string
+          enum: [port, airport, warehouse, terminal]
+        congestionScore:
+          type: number
+          minimum: 0
+          maximum: 100
+      required:
+        - id
+        - code
+        - name
+        - country
+        - lat
+        - lng
+        - type
+        - congestionScore
+
+    Lane:
+      type: object
+      properties:
+        id:
+          type: string
+        originHubId:
+          type: string
+        destinationHubId:
+          type: string
+        mode:
+          type: string
+          enum: [sea, air, road, rail]
+        baselineHours:
+          type: number
+        riskMultiplier:
+          type: number
+        active:
+          type: boolean
+      required:
+        - id
+        - originHubId
+        - destinationHubId
+        - mode
+        - baselineHours
+        - riskMultiplier
+        - active
+
+    Shipment:
+      type: object
+      properties:
+        id:
+          type: string
+        refCode:
+          type: string
+        carrier:
+          type: string
+        mode:
+          type: string
+          enum: [sea, air, road, rail]
+        status:
+          type: string
+          enum: [on_track, at_risk, delayed, rerouted, delivered]
+        originHubId:
+          type: string
+        destinationHubId:
+          type: string
+        originName:
+          type: string
+        destinationName:
+          type: string
+        originLat:
+          type: number
+        originLng:
+          type: number
+        destinationLat:
+          type: number
+        destinationLng:
+          type: number
+        currentLat:
+          type: number
+        currentLng:
+          type: number
+        progressPct:
+          type: number
+          minimum: 0
+          maximum: 100
+        promisedEta:
+          type: string
+          format: date-time
+        currentEta:
+          type: string
+          format: date-time
+        etaDeltaHours:
+          type: number
+        cargoType:
+          type: string
+        cargoValueUsd:
+          type: number
+        riskScore:
+          type: number
+          minimum: 0
+          maximum: 100
+        riskDrivers:
+          type: array
+          items:
+            type: string
+        rerouted:
+          type: boolean
+      required:
+        - id
+        - refCode
+        - carrier
+        - mode
+        - status
+        - originHubId
+        - destinationHubId
+        - originName
+        - destinationName
+        - originLat
+        - originLng
+        - destinationLat
+        - destinationLng
+        - currentLat
+        - currentLng
+        - progressPct
+        - promisedEta
+        - currentEta
+        - etaDeltaHours
+        - cargoType
+        - cargoValueUsd
+        - riskScore
+        - riskDrivers
+        - rerouted
+
+    RouteRecommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        shipmentId:
+          type: string
+        label:
+          type: string
+        viaHubIds:
+          type: array
+          items:
+            type: string
+        viaHubNames:
+          type: array
+          items:
+            type: string
+        etaDeltaHours:
+          type: number
+        costDeltaUsd:
+          type: number
+        carbonDeltaKg:
+          type: number
+        riskAfter:
+          type: number
+          minimum: 0
+          maximum: 100
+        justification:
+          type: string
+      required:
+        - id
+        - shipmentId
+        - label
+        - viaHubIds
+        - viaHubNames
+        - etaDeltaHours
+        - costDeltaUsd
+        - carbonDeltaKg
+        - riskAfter
+        - justification
+
+    ShipmentDetail:
+      type: object
+      properties:
+        shipment:
+          $ref: "#/components/schemas/Shipment"
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/RouteRecommendation"
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelineEvent"
+      required:
+        - shipment
+        - recommendations
+        - timeline
+
+    TimelineEvent:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        label:
+          type: string
+        kind:
+          type: string
+          enum: [pickup, departure, arrival, customs, delay, reroute, delivery, alert]
+      required:
+        - at
+        - label
+        - kind
+
+    AcceptRerouteBody:
+      type: object
+      properties:
+        recommendationId:
+          type: string
+      required:
+        - recommendationId
+
+    AcceptRerouteResult:
+      type: object
+      properties:
+        shipment:
+          $ref: "#/components/schemas/Shipment"
+        dollarsSaved:
+          type: number
+        score:
+          type: integer
+        streak:
+          type: integer
+        message:
+          type: string
+      required:
+        - shipment
+        - dollarsSaved
+        - score
+        - streak
+        - message
+
+    DisruptionEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [typhoon, port_closure, strike, congestion, cyber, weather, geopolitical]
+        scenario:
+          type:
+            - string
+            - "null"
+        title:
+          type: string
+        description:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        radiusKm:
+          type: number
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        startedAt:
+          type: string
+          format: date-time
+        expectedEndAt:
+          type: string
+          format: date-time
+        affectedShipmentCount:
+          type: integer
+        active:
+          type: boolean
+      required:
+        - id
+        - type
+        - title
+        - description
+        - lat
+        - lng
+        - radiusKm
+        - severity
+        - startedAt
+        - expectedEndAt
+        - affectedShipmentCount
+        - active
+
+    SimulateDisruptionBody:
+      type: object
+      properties:
+        scenario:
+          type: string
+          enum: [suez_blocked, china_export_freeze, eu_port_strike, global_weather_chaos, la_port_congestion, panama_drought]
+      required:
+        - scenario
+
+    SimulateDisruptionResult:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/DisruptionEvent"
+        affectedShipmentIds:
+          type: array
+          items:
+            type: string
+        summary:
+          type: string
+      required:
+        - events
+        - affectedShipmentIds
+        - summary
+
+    ResetDisruptionsResult:
+      type: object
+      properties:
+        cleared:
+          type: integer
+      required:
+        - cleared
+
+    FeedEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        at:
+          type: string
+          format: date-time
+        kind:
+          type: string
+          enum: [disruption, reroute, delay, recovery, info, ai]
+        severity:
+          type: string
+          enum: [low, medium, high, critical, info]
+        headline:
+          type: string
+        body:
+          type: string
+        relatedShipmentId:
+          type:
+            - string
+            - "null"
+      required:
+        - id
+        - at
+        - kind
+        - severity
+        - headline
+        - body
+
+    BriefingBody:
+      type: object
+      properties:
+        focus:
+          type:
+            - string
+            - "null"
+
+    Briefing:
+      type: object
+      properties:
+        text:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+        keyPoints:
+          type: array
+          items:
+            type: string
+      required:
+        - text
+        - generatedAt
+        - keyPoints
+
+    CommandBody:
+      type: object
+      properties:
+        text:
+          type: string
+      required:
+        - text
+
+    CommandResult:
+      type: object
+      properties:
+        interpretation:
+          type: string
+        action:
+          type: string
+          enum: [reroute, highlight, brief, none]
+        affectedShipmentIds:
+          type: array
+          items:
+            type: string
+        appliedReroutes:
+          type: integer
+        dollarsSaved:
+          type: number
+        score:
+          type: integer
+        streak:
+          type: integer
+      required:
+        - interpretation
+        - action
+        - affectedShipmentIds
+        - appliedReroutes
+        - dollarsSaved
+        - score
+        - streak
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalShipments:
+          type: integer
+        onTrackCount:
+          type: integer
+        atRiskCount:
+          type: integer
+        delayedCount:
+          type: integer
+        reroutedCount:
+          type: integer
+        deliveredCount:
+          type: integer
+        totalValueAtRiskUsd:
+          type: number
+        avgEtaDeltaHours:
+          type: number
+        activeDisruptions:
+          type: integer
+        score:
+          type: integer
+        streak:
+          type: integer
+        savedDollarsToday:
+          type: number
+        reroutesAcceptedToday:
+          type: integer
+        topAtRiskShipmentIds:
+          type: array
+          items:
+            type: string
+        modeBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModeBreakdownItem"
+        riskBuckets:
+          type: array
+          items:
+            $ref: "#/components/schemas/RiskBucketItem"
+      required:
+        - totalShipments
+        - onTrackCount
+        - atRiskCount
+        - delayedCount
+        - reroutedCount
+        - deliveredCount
+        - totalValueAtRiskUsd
+        - avgEtaDeltaHours
+        - activeDisruptions
+        - score
+        - streak
+        - savedDollarsToday
+        - reroutesAcceptedToday
+        - topAtRiskShipmentIds
+        - modeBreakdown
+        - riskBuckets
+
+    ModeBreakdownItem:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum: [sea, air, road, rail]
+        count:
+          type: integer
+        atRiskCount:
+          type: integer
+      required:
+        - mode
+        - count
+        - atRiskCount
+
+    RiskBucketItem:
+      type: object
+      properties:
+        bucket:
+          type: string
+          enum: [safe, watch, warning, critical]
+        count:
+          type: integer
+      required:
+        - bucket
+        - count

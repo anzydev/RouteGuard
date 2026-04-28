@@ -1,0 +1,36 @@
+# Transit — System Requirements
+# =============================================================================
+# This is a Node.js / pnpm monorepo. There is no Python; this file documents
+# the system-level prerequisites you need before running `npm run dev` or
+# `./start.sh`.
+# =============================================================================
+
+# --- Runtime ---------------------------------------------------------------
+Node.js >= 20.0.0          # Node 24 recommended (matches CI / production)
+npm    >= 10.0.0           # Ships with Node 20+
+pnpm   >= 9.0.0            # Auto-installed by the preinstall hook if missing
+PostgreSQL >= 14           # Local instance OR a hosted Postgres (Neon, Supabase, etc.)
+bash   >= 4                # Required by start.sh
+
+# --- Required environment variables ----------------------------------------
+# Place these in a `.env` file at the repo root (see .env.example):
+DATABASE_URL               # postgres://user:pass@host:5432/dbname
+SESSION_SECRET             # any long random string (defaults to a dev value)
+
+# --- Optional environment variables ----------------------------------------
+# AI features fall back to deterministic templates when these are unset:
+AI_INTEGRATIONS_OPENAI_BASE_URL    # e.g. https://api.openai.com/v1
+AI_INTEGRATIONS_OPENAI_API_KEY     # OpenAI-compatible API key
+
+# --- Quick start -----------------------------------------------------------
+#   1. Install Node 20+ and PostgreSQL.
+#   2. Create a database and copy its connection string.
+#   3. cp .env.example .env  &&  edit .env  (paste DATABASE_URL).
+#   4. ./start.sh
+#
+# Or step-by-step:
+#   npm install        # bootstraps pnpm and installs all workspace deps
+#   npm run db:push    # creates tables from the Drizzle schema
+#   npm run dev        # starts the API (port 8080) + web app (port 5173)
+#
+# Open http://localhost:5173 in your browser.
