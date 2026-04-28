@@ -41,29 +41,82 @@ export async function mockRouter(method: string, url: string, body?: any) {
     const scoreboard = await loadScoreboard();
 
     let totalValueAtRisk = 0;
-    let atRiskShipments = 0;
-    let delayedShipments = 0;
+    let onTrackCount = 0;
+    let atRiskCount = 0;
+    let delayedCount = 0;
+    let reroutedCount = 0;
+    let deliveredCount = 0;
+    let totalEtaDelta = 0;
+
+    const modeCounts = { sea: 0, air: 0, road: 0, rail: 0 };
+    const modeAtRisk = { sea: 0, air: 0, road: 0, rail: 0 };
+    const riskBuckets = { safe: 0, watch: 0, warning: 0, critical: 0 };
 
     for (const s of enriched) {
+      if (s.status === "on_track") onTrackCount++;
+      if (s.status === "at_risk") atRiskCount++;
+      if (s.status === "delayed") delayedCount++;
+      if (s.status === "rerouted") reroutedCount++;
+      if (s.status === "delivered") deliveredCount++;
+
       if (s.status === "at_risk" || s.status === "delayed") {
         totalValueAtRisk += s.cargoValueUsd;
       }
-      if (s.status === "at_risk") atRiskShipments++;
-      if (s.status === "delayed") delayedShipments++;
+      
+      totalEtaDelta += s.etaDeltaHours;
+      
+      const mode = s.mode as keyof typeof modeCounts;
+      if (modeCounts[mode] !== undefined) modeCounts[mode]++;
+      if ((s.status === "at_risk" || s.status === "delayed") && modeAtRisk[mode] !== undefined) modeAtRisk[mode]++;
+
+      if (s.riskScore < 20) riskBuckets.safe++;
+      else if (s.riskScore < 50) riskBuckets.watch++;
+      else if (s.riskScore < 80) riskBuckets.warning++;
+      else riskBuckets.critical++;
     }
+
+    const topAtRiskShipmentIds = enriched
+      .filter(s => s.status === "at_risk" || s.status === "delayed")
+      .sort((a, b) => b.riskScore - a.riskScore)
+      .slice(0, 5)
+      .map(s => s.id);
 
     return {
       activeDisruptions,
       totalShipments: enriched.length,
-      atRiskShipments,
-      delayedShipments,
+      onTrackCount,
+      atRiskCount,
+      delayedCount,
+      reroutedCount,
+      deliveredCount,
       totalValueAtRiskUsd: totalValueAtRisk,
-      scoreboard,
+      avgEtaDeltaHours: enriched.length ? totalEtaDelta / enriched.length : 0,
+      score: scoreboard.score,
+      streak: scoreboard.streak,
+      savedDollarsToday: scoreboard.savedDollarsToday,
+      reroutesAcceptedToday: scoreboard.reroutesAcceptedToday,
+      topAtRiskShipmentIds,
+      modeBreakdown: [
+        { mode: "sea", count: modeCounts.sea, atRiskCount: modeAtRisk.sea },
+        { mode: "air", count: modeCounts.air, atRiskCount: modeAtRisk.air },
+        { mode: "road", count: modeCounts.road, atRiskCount: modeAtRisk.road },
+        { mode: "rail", count: modeCounts.rail, atRiskCount: modeAtRisk.rail },
+      ],
+      riskBuckets: [
+        { bucket: "safe", count: riskBuckets.safe },
+        { bucket: "watch", count: riskBuckets.watch },
+        { bucket: "warning", count: riskBuckets.warning },
+        { bucket: "critical", count: riskBuckets.critical },
+      ],
     };
   }
 
   if (method === "GET" && path === "hubs") {
     return await listHubs();
+  }
+
+  if (method === "GET" && path === "events") {
+    return await listFeedEvents();
   }
 
   if (method === "GET" && path === "lanes") {
@@ -98,7 +151,7 @@ export async function mockRouter(method: string, url: string, body?: any) {
 
     return {
       shipment: enriched,
-      events: [],
+      timeline: [],
       recommendations,
     };
   }
@@ -137,11 +190,15 @@ export async function mockRouter(method: string, url: string, body?: any) {
       relatedShipmentId: id,
     });
 
+    const snapshot = await loadNetwork();
+    const enriched = enrichAll(snapshot).find(s => s.id === id)!;
+
     return {
-      shipmentId: id,
-      success: true,
-      newStatus: "rerouted",
+      shipment: enriched,
       dollarsSaved: saved,
+      score: sb.score + scoreDelta,
+      streak: sb.streak + 1,
+      message: `Shipment ${row.refCode} successfully rerouted.`
     };
   }
 
@@ -283,6 +340,11 @@ export async function mockRouter(method: string, url: string, body?: any) {
 
   if (method === "GET" && path === "scoreboard") {
     return await getScoreboard();
+  }
+
+  if (method === "POST" && path === "scoreboard/reset") {
+    const fresh = await updateScoreboard({ score: 0, streak: 0, savedDollarsToday: 0, reroutesAcceptedToday: 0 });
+    return fresh;
   }
 
   if (method === "POST" && path === "briefing") {
