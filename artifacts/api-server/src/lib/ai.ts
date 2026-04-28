@@ -43,7 +43,7 @@ ${input.focus ? `User focus: ${input.focus}` : ""}
 Return JSON of shape {"text": string (3-5 sentences, punchy), "keyPoints": string[] (3-4 short bullets, max 12 words each)}.`;
 
     const resp = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "llama-3.1-8b-instant",
       max_completion_tokens: 600,
       response_format: { type: "json_object" },
       messages: [
@@ -121,7 +121,7 @@ Command: "${text}"
 Reply JSON: {"interpretation": string (one short sentence describing what you understood), "action": "reroute"|"highlight"|"brief"|"none", "filter": {"statuses"?: string[], "minRiskScore"?: number, "regionKeywords"?: string[]}}`;
 
     const resp = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "llama-3.1-8b-instant",
       max_completion_tokens: 400,
       response_format: { type: "json_object" },
       messages: [

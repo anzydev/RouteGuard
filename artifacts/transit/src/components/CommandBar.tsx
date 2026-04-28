@@ -38,6 +38,7 @@ export default function CommandBar() {
           title: "CHAOS INJECTED",
           description: `Scenario: ${scenario.replace(/_/g, " ").toUpperCase()}`,
           className: "bg-destructive text-destructive-foreground border-none rounded-none font-display uppercase",
+          duration: 2000,
         });
       }
     });
@@ -63,6 +64,7 @@ export default function CommandBar() {
           title: "COMMAND EXECUTED",
           description: res.interpretation,
           className: "bg-primary text-primary-foreground border-none rounded-none font-display uppercase",
+          duration: 2000,
         });
       }
     });

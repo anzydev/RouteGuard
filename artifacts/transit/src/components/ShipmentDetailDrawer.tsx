@@ -37,6 +37,7 @@ export default function ShipmentDetailDrawer({ shipmentId, onClose }: ShipmentDe
           title: "REROUTE ACCEPTED",
           description: `Saved $${res.dollarsSaved.toLocaleString()} | Score +${res.score}`,
           className: "bg-primary text-primary-foreground border-none rounded-none font-display uppercase",
+          duration: 2000,
         });
         
         // onClose(); // Optional: close drawer after accepting
