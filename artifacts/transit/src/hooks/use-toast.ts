@@ -4,6 +4,7 @@ import type {
   ToastActionElement,
   ToastProps,
 } from "@/components/ui/toast"
+import { audio } from "@/lib/audio"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -148,6 +149,10 @@ function toast({ ...props }: Toast) {
       toast: { ...props, id },
     })
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  if (props.variant === "destructive" || props.className?.includes("destructive") || props.title === "CHAOS INJECTED") {
+    audio.playWarning();
+  }
 
   dispatch({
     type: "ADD_TOAST",
