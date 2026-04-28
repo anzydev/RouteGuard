@@ -166,6 +166,9 @@ function toast({ ...props }: Toast) {
     },
   })
 
+  // Force dismiss after duration (overrides Radix UI's hover-pause behavior)
+  setTimeout(() => dismiss(), props.duration || 5000);
+
   return {
     id: id,
     dismiss,
