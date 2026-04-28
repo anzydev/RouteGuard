@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 
 // XOR obfuscation to hide Groq API key from plain text in GitHub
-const OBFS_KEY = "FAQCOTZVOSAcXiw4EgEgNhhuOlIYJjIbMTMHEQNaKAZECFQUPwU+JVwxEhMtPzBbIQgnIxBCAjY=";
-const SECRET = "swiftchain_secret_key";
+const OBFS_KEY = "EwEKMTFfJR4GVRA5EhYNOAlIJUUAOzYbIxgXHAFBIy1oBlIfLgMAIEohFTs3PCdKLB0RJipIEyc=";
+const SECRET = "transit_secret_key";
 
 function decodeKey(encodedBase64: string, pass: string): string {
   const str = Buffer.from(encodedBase64, 'base64').toString('ascii');
